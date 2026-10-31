@@ -1,0 +1,8 @@
+.pio/
+.vscode/
+compile_commands.json
+__pycache__/
+outputs/
+src/*.baggages/
+.tools/
+test-results.txt

@@ -1,0 +1,5 @@
+# OpenKNX dependencies restored by scripts/Restore-Dependencies.ps1
+7124a64 v1 knx https://github.com/OpenKNX/knx.git
+86dc82b v1 OGM-Common https://github.com/OpenKNX/OGM-Common.git
+acaadd7 v1 OGM-HardwareConfig https://github.com/OpenKNX/OGM-HardwareConfig.git
+eca6977 v1 OFM-ConfigTransfer https://github.com/OpenKNX/OFM-ConfigTransfer.git

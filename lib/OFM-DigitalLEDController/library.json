@@ -1,0 +1,5 @@
+{
+  "name": "OFM-DigitalLEDController",
+  "version": "0.1.0",
+  "description": "OpenKNX WLED digital LED actuator module"
+}

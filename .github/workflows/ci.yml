@@ -1,0 +1,126 @@
+name: OAM Digital LED Controller CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache PlatformIO, producer and OpenKNX repositories
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            .tools/OpenKNXproducer
+            ../knx
+            ../OGM-Common
+            ../OGM-HardwareConfig
+            ../OFM-ConfigTransfer
+          key: ${{ runner.os }}-ofm-led-${{ hashFiles('dependencies.txt', 'platformio.ini', 'platformio.custom.ini', 'scripts/Install-OpenKNXProducer.ps1') }}
+          restore-keys: |
+            ${{ runner.os }}-ofm-led-
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        shell: pwsh
+        run: python -m pip install --upgrade platformio
+
+      - name: Restore OpenKNX dependencies
+        shell: pwsh
+        run: .\scripts\Restore-Dependencies.ps1
+
+      - name: Install OpenKNXproducer
+        shell: pwsh
+        run: |
+          $producer = .\scripts\Install-OpenKNXProducer.ps1
+          "OPENKNXPRODUCER=$producer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Generate development ETS product and header
+        shell: pwsh
+        run: .\scripts\Generate-KnxProduct.ps1 -Producer $env:OPENKNXPRODUCER
+
+      - name: Verify generated firmware header is committed
+        shell: pwsh
+        run: git diff --exit-code -- include/knxprod.h
+
+      - name: Run host tests
+        shell: pwsh
+        run: |
+          $lines = @(& python -m unittest discover -s test -p "test_*.py" -v 2>&1)
+          $lines | Tee-Object -FilePath test-results.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build development firmware
+        shell: pwsh
+        run: pio run -e develop_OAM_DigitalLEDController
+
+      - name: Preserve development generated files
+        shell: pwsh
+        run: |
+          if (-not (Test-Path src\DigitalLEDController.baggages\AF\01\01\Help_de.zip)) { throw "Development Help_de.zip baggage is missing" }
+          if (-not (Test-Path src\DigitalLEDController.baggages\AF\01\01\Icons.zip)) { throw "Development Icons.zip baggage is missing" }
+          New-Item -ItemType Directory -Path "$env:RUNNER_TEMP\ofm-dev" -Force | Out-Null
+          Copy-Item include\knxprod.h "$env:RUNNER_TEMP\ofm-dev\knxprod.h"
+          Copy-Item outputs\DigitalLEDController.knxprod "$env:RUNNER_TEMP\ofm-dev\DigitalLEDController.knxprod"
+          Copy-Item .pio\build\develop_OAM_DigitalLEDController\firmware.uf2 "$env:RUNNER_TEMP\ofm-dev\firmware.uf2"
+
+      - name: Generate release ETS product and header
+        shell: pwsh
+        run: .\scripts\Generate-KnxProduct.ps1 -Producer $env:OPENKNXPRODUCER -Configuration Release
+
+      - name: Verify release generated header matches the release XML
+        shell: pwsh
+        run: |
+          $expected = Join-Path $env:RUNNER_TEMP "release-knxprod.h"
+          $product = Join-Path $env:RUNNER_TEMP "release-check.knxprod"
+          & $env:OPENKNXPRODUCER create src\DigitalLEDController-Release.xml -N -h $expected -o $product
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $actualHash = (Get-FileHash include\knxprod.h -Algorithm SHA256).Hash
+          $expectedHash = (Get-FileHash $expected -Algorithm SHA256).Hash
+          if ($actualHash -ne $expectedHash) {
+            throw "Release knxprod.h is not reproducible from DigitalLEDController-Release.xml"
+          }
+
+      - name: Build release firmware
+        shell: pwsh
+        run: pio run -e release_OAM_DigitalLEDController
+
+      - name: Collect release artifacts
+        shell: pwsh
+        run: |
+          if (-not (Test-Path src\DigitalLEDController-Release.baggages\A6\01\01\Help_de.zip)) { throw "Release Help_de.zip baggage is missing" }
+          if (-not (Test-Path src\DigitalLEDController-Release.baggages\A6\01\01\Icons.zip)) { throw "Release Icons.zip baggage is missing" }
+          New-Item -ItemType Directory -Path "$env:RUNNER_TEMP\ofm-release" -Force | Out-Null
+          Copy-Item include\knxprod.h "$env:RUNNER_TEMP\ofm-release\knxprod.h"
+          Copy-Item outputs\DigitalLEDController-Release.knxprod "$env:RUNNER_TEMP\ofm-release\DigitalLEDController-Release.knxprod"
+          Copy-Item .pio\build\release_OAM_DigitalLEDController\firmware.uf2 "$env:RUNNER_TEMP\ofm-release\firmware.uf2"
+
+      - name: Upload development artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ofm-digital-led-development
+          path: ${{ runner.temp }}/ofm-dev
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ofm-digital-led-release
+          path: ${{ runner.temp }}/ofm-release
+
+      - name: Upload host test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ofm-digital-led-test-report
+          path: test-results.txt
