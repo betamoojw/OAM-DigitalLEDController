@@ -1,8 +1,10 @@
 .pio/
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 compile_commands.json
 __pycache__/
 outputs/
 src/*.baggages/
 .tools/
 test-results.txt
+/include/buildtime.h

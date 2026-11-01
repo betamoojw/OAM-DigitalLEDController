@@ -2,7 +2,7 @@
 #include "HardwareConfig.h"
 #include "knxprod.h"
 
-#ifdef BOARD_OFM_DIGITAL_LED_CONTROLLER
+#ifdef BOARD_OAM_DIGITAL_LED_CONTROLLER
 #define DEVICE_ID "OFM-DigitalLEDController"
 #define HARDWARE_NAME "OFM Digital LED Controller"
 #define DEVICE_NAME "OFM KNX TP Digital LED Controller"

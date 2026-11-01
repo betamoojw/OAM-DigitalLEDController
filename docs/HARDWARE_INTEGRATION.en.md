@@ -29,14 +29,14 @@ WLED serial settings: `115200 baud, 8 data bits, no parity, 1 stop bit`. JSON fr
 ## Flashing
 
 ```powershell
-pio run -e develop_OFM_DigitalLEDController
-pio run -e develop_OFM_DigitalLEDController -t upload
+pio run -e develop_OAM_DigitalLEDController
+pio run -e develop_OAM_DigitalLEDController -t upload
 ```
 
 Do not upload until the target port and hardware connections have been confirmed. For a Release build:
 
 ```powershell
-pio run -e release_OFM_DigitalLEDController
+pio run -e release_OAM_DigitalLEDController
 ```
 
 The UF2 file is located at `.pio/build/<environment>/firmware.uf2`.

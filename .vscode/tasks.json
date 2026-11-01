@@ -1,0 +1,132 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Install OpenKNXproducer",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/Install-OpenKNXProducer.ps1",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Restore Dependencies",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/Restore-Dependencies.ps1",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "OpenKNXproducer Dev",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/Generate-KnxProduct.ps1",
+            "args": [
+                "-Producer",
+                "${workspaceFolder}/.tools/OpenKNXproducer/tools/Windows/OpenKNXproducer-x64.exe",
+                "-Configuration",
+                "Development"
+            ],
+            "problemMatcher": [],
+            "group": "test",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Restore Dependencies",
+                "Install OpenKNXproducer"
+            ]
+        },
+        {
+            "label": "OpenKNXproducer Release",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/Generate-KnxProduct.ps1",
+            "args": [
+                "-Producer",
+                "${workspaceFolder}/.tools/OpenKNXproducer/tools/Windows/OpenKNXproducer-x64.exe",
+                "-Configuration",
+                "Release"
+            ],
+            "problemMatcher": [],
+            "group": "test",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Restore Dependencies",
+                "Install OpenKNXproducer"
+            ]
+        },
+        {
+            "label": "Pull",
+            "type": "shell",
+            "command": "git pull --ff-only",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Pull & Restore",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/Restore-Dependencies.ps1",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "test",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Pull"
+            ]
+        },
+        {
+            "label": "Build Firmware Dev",
+            "type": "shell",
+            "command": "pio",
+            "args": [
+                "run",
+                "-e",
+                "develop_OAM_DigitalLEDController"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "OpenKNXproducer Dev"
+            ]
+        },
+        {
+            "label": "Build Firmware Release",
+            "type": "shell",
+            "command": "pio",
+            "args": [
+                "run",
+                "-e",
+                "release_OAM_DigitalLEDController"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "OpenKNXproducer Release"
+            ]
+        },
+        {
+            "label": "Build Firmware All",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build Firmware Dev",
+                "Build Firmware Release"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}

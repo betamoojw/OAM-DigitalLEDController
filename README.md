@@ -19,6 +19,10 @@ brightness, RGB color, scenes/presets, palette, effect, speed and intensity.
 The project expects the OpenKNX dependency repositories in `lib/` as directory
 links, matching the OAM workflow. Restore those dependencies first, then run:
 
+```powershell
+.\scripts\Restore-Dependencies.ps1
+```
+
 ```text
 pio run -e develop_OAM_DigitalLEDController
 ```
@@ -32,6 +36,9 @@ The product definition is maintained by OpenKNXproducer XML, not Kaenx-Creator:
 - `src/DigitalLEDController.conf.xml`: version and module configuration
 - `lib/OFM-DigitalLEDController/src/DigitalLedModule.share.xml`: LED objects and parameters
 - `lib/OFM-DigitalLEDController/src/DigitalLedModule.templ.xml`: channel UI and object references
+
+The product also includes ConfigTransfer, FunctionBlocks, LogicModule and
+VirtualButton as reusable OpenKNX modules.
 
 Generate the ETS product and firmware header with:
 

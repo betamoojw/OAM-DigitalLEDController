@@ -18,7 +18,7 @@ if (-not (Test-Path $xmlPath)) {
 New-Item -ItemType Directory -Path (Split-Path $outputPath) -Force | Out-Null
 Push-Location $root
 try {
-    & $Producer create $xmlPath -h $headerPath -o $outputPath
+    & $Producer create $xmlPath -N -h $headerPath -o $outputPath
     if ($LASTEXITCODE -ne 0) {
         throw "OpenKNXproducer failed with exit code $LASTEXITCODE"
     }

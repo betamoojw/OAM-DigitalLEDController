@@ -1,12 +1,20 @@
 #include "DigitalLedModule.h"
+#include "FunctionBlocksModule.h"
+#include "Logic.h"
 #include "OpenKNX.h"
+#include "VirtualButtonModule.h"
 #include "hardware.h"
+
+const uint8_t firmwareRevision = 0;
 
 void setup()
 {
     Serial.begin(115200);
     openknx.init(1);
     openknx.addModule(1, digitalLedModule);
+    openknx.addModule(2, openknxFunctionBlocksModule);
+    openknx.addModule(3, openknxLogic);
+    openknx.addModule(4, openknxVirtualButtonModule);
     openknx.setup();
 }
 

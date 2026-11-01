@@ -24,6 +24,9 @@ jobs:
             ../OGM-Common
             ../OGM-HardwareConfig
             ../OFM-ConfigTransfer
+            ../OFM-FunctionBlocks
+            ../OFM-LogicModule
+            ../OFM-VirtualButton
           key: ${{ runner.os }}-ofm-led-${{ hashFiles('dependencies.txt', 'platformio.ini', 'platformio.custom.ini', 'scripts/Install-OpenKNXProducer.ps1') }}
           restore-keys: |
             ${{ runner.os }}-ofm-led-

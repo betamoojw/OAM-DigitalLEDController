@@ -29,14 +29,14 @@ WLED 串口参数：`115200 baud, 8 data bits, no parity, 1 stop bit`。收发 J
 ## 烧录
 
 ```powershell
-pio run -e develop_OFM_DigitalLEDController
-pio run -e develop_OFM_DigitalLEDController -t upload
+pio run -e develop_OAM_DigitalLEDController
+pio run -e develop_OAM_DigitalLEDController -t upload
 ```
 
 不要在未确认端口和硬件连接前执行上传。Release 构建：
 
 ```powershell
-pio run -e release_OFM_DigitalLEDController
+pio run -e release_OAM_DigitalLEDController
 ```
 
 UF2 文件位于 `.pio/build/<environment>/firmware.uf2`。
