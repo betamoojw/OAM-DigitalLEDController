@@ -18,6 +18,24 @@ class EtsXmlTests(unittest.TestCase):
             self.assertIsNotNone(root.find("op:ETS", NS))
             self.assertIsNotNone(root.find("knx:generate", NS))
 
+    def test_development_and_release_products_include_config_transfer(self):
+        config_root = ET.parse(ROOT / "src" / "DigitalLEDController.conf.xml").getroot()
+        config_values = {node.attrib["name"]: node.attrib["value"] for node in config_root.findall("op:config", NS)}
+        self.assertEqual(config_values["%UCT_VerifyVersion%"], "0.5")
+
+        for filename in ("DigitalLEDController.xml", "DigitalLEDController-Release.xml"):
+            root = ET.parse(ROOT / "src" / filename).getroot()
+            modules = {node.attrib["prefix"]: node for node in root.findall("op:define", NS)}
+            config_transfer = modules["UCT"]
+            self.assertEqual(config_transfer.attrib["ModuleType"], "99")
+            self.assertEqual(config_transfer.attrib["noConfigTransfer"], "true")
+            self.assertEqual(config_transfer.attrib["share"], "../lib/OFM-ConfigTransfer/src/ConfigTransfer.share.xml")
+
+            verify = config_transfer.find("op:verify", NS)
+            self.assertIsNotNone(verify)
+            self.assertEqual(verify.attrib["File"], "../lib/OFM-ConfigTransfer/library.json")
+            self.assertEqual(verify.attrib["ModuleVersion"], "%UCT_VerifyVersion%")
+
     def test_module_xml_exposes_runtime_parameters_and_help(self):
         root = ET.parse(ROOT / "lib" / "OFM-DigitalLEDController" / "src" / "DigitalLedModule.share.xml").getroot()
         names = {node.attrib["Name"] for node in root.findall(".//knx:Parameter", NS)}

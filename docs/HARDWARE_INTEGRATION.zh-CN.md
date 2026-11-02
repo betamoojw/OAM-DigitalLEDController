@@ -1,4 +1,4 @@
-# OFM Digital LED Controller 硬件联调手册
+# OAM Digital LED Controller 硬件联调手册
 
 当前没有硬件时，使用 CI、OpenKNXproducer 和 `test/` 仿真测试完成软件验证。硬件到位后按以下顺序联调。
 
@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart LR
-    KNX[KNX TP 总线] -->|TP UART| RP2040[RP2040 OFM 控制器]
+    KNX[KNX TP 总线] -->|TP UART| RP2040[RP2040 OAM 控制器]
     RP2040 -->|Serial2 115200 8N1| WLED[WLED 控制器]
     RP2040 -->|5V/GND| PSU[电源]
     PSU --> WLED

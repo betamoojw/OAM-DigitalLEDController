@@ -1,4 +1,4 @@
-# OFM Digital LED Controller Hardware Bring-Up Guide
+# OAM Digital LED Controller Hardware Bring-Up Guide
 
 Until hardware is available, use CI, OpenKNXproducer, and the `test/` simulations for software validation. When the hardware is available, follow this sequence for bring-up.
 
@@ -6,7 +6,7 @@ Until hardware is available, use CI, OpenKNXproducer, and the `test/` simulation
 
 ```mermaid
 flowchart LR
-    KNX[KNX TP bus] -->|TP UART| RP2040[RP2040 OFM controller]
+    KNX[KNX TP bus] -->|TP UART| RP2040[RP2040 OAM controller]
     RP2040 -->|Serial2 115200 8N1| WLED[WLED controller]
     RP2040 -->|5V/GND| PSU[Power supply]
     PSU --> WLED

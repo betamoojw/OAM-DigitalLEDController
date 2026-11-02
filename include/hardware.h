@@ -3,9 +3,9 @@
 #include "knxprod.h"
 
 #ifdef BOARD_OAM_DIGITAL_LED_CONTROLLER
-#define DEVICE_ID "OFM-DigitalLEDController"
-#define HARDWARE_NAME "OFM Digital LED Controller"
-#define DEVICE_NAME "OFM KNX TP Digital LED Controller"
+#define DEVICE_ID "OAM-DigitalLEDController"
+#define HARDWARE_NAME "OAM Digital LED Controller"
+#define DEVICE_NAME "OAM KNX TP Digital LED Controller"
 #define PROG_LED_PIN 2
 #define PROG_LED_PIN_ACTIVE_ON HIGH
 #define PROG_BUTTON_PIN 7
